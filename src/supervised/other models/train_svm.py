@@ -8,10 +8,10 @@ import numpy as np
 import pandas as pd
 
 # load data hasil ekstraksi fitur fft
-x = pd.read_csv("data/feature_VBL-VA001.csv", header=None)
+x = pd.read_csv("data/VBL-VA001/V04 Fan/feature_VBL-VA001.csv", header=None)
 
 # load label
-y = pd.read_csv("data/label_VBL-VA001.csv", header=None)
+y = pd.read_csv("data/VBL-VA001/V04 Fan/label_VBL-VA001.csv", header=None)
 
 # make 1D array to avoid warning
 y = pd.Series.ravel(y)
@@ -36,13 +36,16 @@ for i, k in enumerate(c_svm):
     svm.fit(X_train, y_train)
     # Compute accuracy on the training set
     train_accuracy[i] = svm.score(X_train, y_train)
+    print(train_accuracy[i])
+    print("-----------------------------")
     # Compute accuracy on the test set
     test_accuracy[i] = svm.score(X_test, y_test)
+    print(test_accuracy[i])
 
 # Generate plot
 # plt.title('Varying number of SVM')
-plt.plot(c_svm, test_accuracy, label='Testing Accuracy')
-plt.plot(c_svm, train_accuracy, label='Training accuracy')
+plt.plot(c_svm, test_accuracy, label='Testing Accuracy', marker='o')
+plt.plot(c_svm, train_accuracy, label='Training accuracy', marker='x')
 plt.legend()
 plt.xlabel('C')
 plt.ylabel('Accuracy')
