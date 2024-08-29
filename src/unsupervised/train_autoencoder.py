@@ -53,7 +53,7 @@ def train_model(x_train):
     
     history = model.fit(
         x_train, x_train,
-        epochs=1,
+        epochs=20,
         batch_size=128,
         validation_split=0.1,
         callbacks=[

@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import joblib
 
 # Load data
-x = pd.read_csv("../../data/supervised/classification_training_data/V04 Fan/feature_VBL-VA001.csv", header=None)
-y = pd.read_csv("../../data/supervised/classification_training_data/V04 Fan/label_VBL-VA001.csv", header=None)
+x = pd.read_csv("../../data/supervised/classification_training_data/Fan/feature_VBL-VA001.csv", header=None)
+y = pd.read_csv("../../data/supervised/classification_training_data/Fan/label_VBL-VA001.csv", header=None)
 y = pd.Series.ravel(y)
 
 # Split the data

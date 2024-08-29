@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import glob
 import matplotlib.pyplot as plt
-data_path = '../../data/supervised/classification_training_data/V04 Fan'
+data_path = '../../data/supervised/classification_training_data/Fan'
 
 totalFiles = 0
 totalDir = 0
@@ -604,7 +604,7 @@ print(f"Shape of feature: {x.shape}")
 
 
 fft_x = pd.DataFrame(x).to_csv(
-    '../../data/supervised/classification_training_data/V04 Fan/feature_VBL-VA001.csv', index=None, header=False)
+    '../../data/supervised/classification_training_data/Fan/feature_VBL-VA001.csv', index=None, header=False)
 
 y_1 = np.full((int(len(x_1)), 1), 0)
 y_2 = np.full((int(len(x_2)), 1), 1)
@@ -617,10 +617,8 @@ print(f"Shape of labels: {y.shape}")
 
 
 y_label = pd.DataFrame(y).to_csv(
-    '../../data/supervised/classification_training_data/V04 Fan/label_VBL-VA001.csv', index=None, header=False)
+    '../../data/supervised/classification_training_data/Fan/label_VBL-VA001.csv', index=None, header=False)
 
-
-# After your feature extraction code, but before saving to CSV:
 
 def create_feature_names():
     feature_names = []
@@ -654,5 +652,5 @@ def plot_features(data, feature_names):
     plt.close()
 
 # When you want to plot, read the CSV and use the feature names
-data_for_plotting = pd.read_csv('../../data/supervised/classification_training_data/V04 Fan/feature_VBL-VA001.csv', header=None)
+data_for_plotting = pd.read_csv('../../data/supervised/classification_training_data/Fan/feature_VBL-VA001.csv', header=None)
 plot_features(data_for_plotting, feature_names)
