@@ -8,9 +8,11 @@ import matplotlib.pyplot as plt
  
 # Constants
 TIME_STEPS = 288
-NORMAL_DATA_PATH = 'train'
-MODEL_PATH = 'train/model.keras'  # Updated file path with .keras extension
-PARAMS_PATH = 'saved_params.joblib'
+
+NORMAL_DATA_PATH = '../../data/unsupervised/train_data'
+MODEL_PATH = '../../models/unsupervised/model.keras'
+PARAMS_PATH = '../../models/unsupervised/saved_params.joblib'
+
  
 def load_csv_files(directory):
     dataframes = []
@@ -53,7 +55,7 @@ def train_model(x_train):
  
     history = model.fit(
         x_train, x_train,
-        epochs=1,
+        epochs=20,
         batch_size=128,
         validation_split=0.1,
         callbacks=[
