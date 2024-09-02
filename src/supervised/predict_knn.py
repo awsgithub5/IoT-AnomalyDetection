@@ -130,10 +130,22 @@ def plot_shap_values(shap_values, feature_names, anomaly_type, output_folder):
     plt.savefig(os.path.join(output_folder, f'{anomaly_type}_shap_plot.png'))
     plt.close()
 
+
+import os
+import pandas as pd
+import numpy as np
+from scipy.stats import kurtosis, skew
+from scipy.fft import rfft
+import joblib
+import shap
+import shutil 
+import matplotlib.pyplot as plt
+
+
 if __name__ == "__main__":
-    raw_data_folder = "../../data/unsupervised/output_abnormal"
+    raw_data_folder = "../../data/supervised/test_data"
     model_path = '../../models/supervised/knn_model.joblib'
-    output_base_folder = "results"
+    output_base_folder = "../../results"
     
     X, predictions, shap_values, filenames = process_folder_and_predict(raw_data_folder, model_path)
     
@@ -159,57 +171,70 @@ if __name__ == "__main__":
     features_df['filename'] = filenames
     features_df['predicted_anomaly'] = predictions
 
-
-    # Group results by predicted anomaly
-    grouped_results = results.groupby('predicted_anomaly')
+    # Define anomaly type map
     anomaly_type_map = {
-    0: "normal",
-    1: "Misalignment",
-    2: "Unbalance",
-    3: "Looseness",
-    4: "Impact"
-}
+        0: "normal",
+        1: "Misalignment",
+        2: "Unbalance",
+        3: "Looseness",
+        4: "Impact"
+    }
 
-        # Process each anomaly type
-   
-    for anomaly_type, group in grouped_results:
-        # Convert numeric anomaly_type to descriptive name
-        anomaly_name = anomaly_type_map.get(anomaly_type, f"unknown_{anomaly_type}")
-        
-        # Create folders for this anomaly type
-        anomaly_folder = os.path.join(output_base_folder, anomaly_name)
+    # Create folders for each anomaly type
+    for anomaly_type in anomaly_type_map.values():
+        anomaly_folder = os.path.join(output_base_folder, anomaly_type)
         plots_folder = os.path.join(anomaly_folder, 'plots')
         ensure_dir(anomaly_folder)
         ensure_dir(plots_folder)
+
+    # Process each file
+    for index, row in results.iterrows():
+        filename = row['filename']
+        predicted_anomaly = row['predicted_anomaly']
+        anomaly_name = anomaly_type_map.get(predicted_anomaly, f"unknown_{predicted_anomaly}")
         
-        # Save the anomaly-specific data to CSV files
-        group_files = group['filename'].tolist()
+        # Define folders for this anomaly type
+        anomaly_folder = os.path.join(output_base_folder, anomaly_name)
+        plots_folder = os.path.join(anomaly_folder, 'plots')
         
-        # Save anomaly-specific extracted features
-        anomaly_features = features_df[features_df['filename'].isin(group_files)]
-        anomaly_features.to_csv(os.path.join(anomaly_folder, f'{anomaly_name}_features.csv'), index=False)
+        # Copy original file to appropriate anomaly folder
+        src_path = os.path.join(raw_data_folder, filename)
+        dst_path = os.path.join(anomaly_folder, filename)
+        shutil.copy2(src_path, dst_path)
         
-        # Save anomaly-specific SHAP values
-        anomaly_shap = shap_df[shap_df['filename'].isin(group_files)]
-        anomaly_shap.to_csv(os.path.join(anomaly_folder, f'{anomaly_name}_shap_values.csv'), index=False)
+        # Read and plot the original data
+        data = pd.read_csv(src_path, usecols=[4, 5, 6], names=['X', 'Y', 'Z'], header=0, skiprows=1)
+        plot_data(data, filename, anomaly_name, plots_folder)
         
-        # Plot and save SHAP values
+        # Extract features and SHAP values for this file
+        file_features = features_df[features_df['filename'] == filename]
+        file_shap = shap_df[shap_df['filename'] == filename]
+        
+        # Append to anomaly-specific CSV files
+        features_csv = os.path.join(anomaly_folder, f'{anomaly_name}_features.csv')
+        shap_csv = os.path.join(anomaly_folder, f'{anomaly_name}_shap_values.csv')
+        
+        file_features.to_csv(features_csv, mode='a', header=not os.path.exists(features_csv), index=False)
+        file_shap.to_csv(shap_csv, mode='a', header=not os.path.exists(shap_csv), index=False)
+
+    # Plot and save SHAP values for each anomaly type
+    for anomaly_type, anomaly_name in anomaly_type_map.items():
+        anomaly_folder = os.path.join(output_base_folder, anomaly_name)
+        plots_folder = os.path.join(anomaly_folder, 'plots')
+        
         anomaly_indices = np.where(predictions == anomaly_type)[0]
-        if isinstance(shap_values, list):  # Multi-class case
-            anomaly_shap_values = [shap_values[i][anomaly_indices] for i in range(len(shap_values))]
-        else:  # Binary classification case
-            anomaly_shap_values = shap_values[anomaly_indices]
-        
-        plot_shap_values(anomaly_shap_values, feature_names, anomaly_name, plots_folder)
-        
-        # Copy and plot original data files
-        for filename in group_files:
-            src_path = os.path.join(raw_data_folder, filename)
-            dst_path = os.path.join(anomaly_folder, filename)
-            shutil.copy2(src_path, dst_path)
+        if len(anomaly_indices) > 0:
+            if isinstance(shap_values, list):  # Multi-class case
+                anomaly_shap_values = [shap_values[i][anomaly_indices] for i in range(len(shap_values))]
+            else:  # Binary classification case
+                anomaly_shap_values = shap_values[anomaly_indices]
             
-            # Read and plot the original data
-            data = pd.read_csv(src_path, usecols=[4, 5, 6], names=['X', 'Y', 'Z'], header=0, skiprows=1)
-            plot_data(data, filename, anomaly_name, plots_folder)
+            plot_shap_values(anomaly_shap_values, feature_names, anomaly_name, plots_folder)
 
     print("Processing complete. Results saved in the 'results' folder.")
+    
+    # Print summary of classification results
+    print("\nClassification Summary:")
+    for anomaly_type, count in results['predicted_anomaly'].value_counts().sort_index().items():
+        anomaly_name = anomaly_type_map.get(anomaly_type, f"unknown_{anomaly_type}")
+        print(f"{anomaly_name}: {count} files")

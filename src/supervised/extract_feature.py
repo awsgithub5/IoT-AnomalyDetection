@@ -30,13 +30,13 @@ print('Total data Normal :', len([entry for entry in os.listdir(
 dir_path2 = data_path + '/Misalignment/'
 print('Total data misalignment :', len([entry for entry in os.listdir(
     dir_path2) if os.path.isfile(os.path.join(dir_path2, entry))]))
-dir_path3 = data_path + '/Unbalance'
+dir_path3 = data_path + '/Unbalance/'
 print('Total data unbalance :', len([entry for entry in os.listdir(
     dir_path3) if os.path.isfile(os.path.join(dir_path3, entry))]))
-dir_path4 = data_path + '/Looseness'
+dir_path4 = data_path + '/Looseness/'
 print('Total data bearing fault:', len([entry for entry in os.listdir(
     dir_path4) if os.path.isfile(os.path.join(dir_path4, entry))]))
-dir_path5 = data_path + '/Impact'
+dir_path5 = data_path + '/Impact/'
 print('Total data Impact fault:', len([entry for entry in os.listdir(
     dir_path4) if os.path.isfile(os.path.join(dir_path4, entry))]))
 

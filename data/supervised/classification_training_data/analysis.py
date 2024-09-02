@@ -37,7 +37,7 @@ def plot_waveform(time, x, y, z, filename):
     plt.title(f'Waveform - {filename}')
     plt.legend()
     plt.grid(True)
-    plt.savefig(f'{filename}_waveform.png')
+    plt.savefig(f'Fan/Unbalance/plots/{filename}_waveform.png')
     plt.close()
 
 # Main function to process all files in a folder
@@ -54,7 +54,7 @@ def process_folder(folder_path):
             plot_waveform(time, x, y, z, filename[:-4])  # Remove .csv extension
 
 # Specify the folder path containing your vibration data files
-folder_path = '../data/unsupervised/raw_data'
+folder_path = 'Fan/Unbalance'
 
 # Process all files in the folder
 process_folder(folder_path)
