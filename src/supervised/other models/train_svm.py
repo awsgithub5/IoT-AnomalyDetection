@@ -7,11 +7,8 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
 
-# load data hasil ekstraksi fitur fft
-x = pd.read_csv("data/VBL-VA001/V04 Fan/feature_VBL-VA001.csv", header=None)
-
-# load label
-y = pd.read_csv("data/VBL-VA001/V04 Fan/label_VBL-VA001.csv", header=None)
+x = pd.read_csv("../../../data/supervised/classification_training_data/Fan/feature_VBL-VA001.csv", header=None)
+y = pd.read_csv("../../../data/supervised/classification_training_data/Fan/label_VBL-VA001.csv", header=None)
 
 # make 1D array to avoid warning
 y = pd.Series.ravel(y)

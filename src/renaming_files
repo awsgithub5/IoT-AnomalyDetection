@@ -1,0 +1,45 @@
+import os
+import shutil
+
+def copy_and_rename_files(source_folder, reference_folder, destination_folder):
+    # Ensure all folders exist
+    for folder in [source_folder, reference_folder, destination_folder]:
+        if not os.path.exists(folder):
+            print(f"Error: Folder {folder} does not exist.")
+            return
+
+    # Get list of files in the reference folder
+    reference_files = set(os.listdir(reference_folder))
+
+    # Iterate through files in the source folder
+    for filename in os.listdir(reference_folder):
+     
+        # Remove "_waveform.png" and check if the base name is in reference_files
+        #base_name = filename.replace("_waveform.png", "")
+        #new_filename = f"{base_name}.csv"
+        print("@@@",filename)
+        print(reference_files)
+        if filename in reference_files:
+            base_name = filename.replace("_waveform.png", "")
+            new_filename = f"{base_name}.csv"
+            source_path = os.path.join(source_folder, new_filename)
+            print(source_path)
+            # Create new filename with .csv extension
+            
+            destination_path = os.path.join(destination_folder, new_filename)
+            #print(destination_path)
+            try:
+                shutil.copy2(source_path, destination_path)
+                print(f"Copied and renamed: {filename} -> {new_filename}")
+            except IOError as e:
+                print(f"Error processing {filename}: {e}")
+
+
+if __name__ == "__main__":
+    folder1 = "../data/supervised/classification_training_data/Fan/Unbalance/plots"  # Reference folder
+    folder2 = "../data/supervised/classification_training_data/Fan/all_files"  # Source folder
+    folder3 = "../data/supervised/classification_training_data/Fan/Unbalance"  # Destination folder
+
+    copy_and_rename_files(folder2, folder1, folder3)
+    
+    print("File copying process completed.")
